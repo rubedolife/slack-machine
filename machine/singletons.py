@@ -29,8 +29,9 @@ class Scheduler(metaclass=Singleton):
         _settings, _ = import_settings()
         self._scheduler = BackgroundScheduler()
         if 'REDIS_URL' in _settings:
-            redis_config = gen_config_dict(_settings)
-            self._scheduler.add_jobstore('redis', **redis_config)
+            if not ('NO_REDIS_APSCHEDULER' in _settings and _settings['NO_REDIS_APSCHEDULER']):
+                redis_config = gen_config_dict(_settings)
+                self._scheduler.add_jobstore('redis', **redis_config)
 
     def __getattr__(self, item):
         return getattr(self._scheduler, item)
